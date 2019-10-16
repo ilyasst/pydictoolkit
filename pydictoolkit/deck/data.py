@@ -25,3 +25,5 @@ class Deck():
                         sys.exit(1)
                     else:
                         self.dic_path = self.doc["Data"]["Folder"]
+                        self.sample_size = self.doc["Region"]
+                
