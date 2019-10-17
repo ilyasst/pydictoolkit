@@ -3,29 +3,66 @@ import numpy as np
 
 class Plotter():
 
-    def __init__(self, dic_data, deck):
+    def __init__(self, zz, dic_data, deck, 
+                plot_grid = False, 
+                plot_deltas = False,
+                plot_heatmaps = False):
 
-        for dic_image in dic_data:
-            dic_image.columns = dic_image.columns.str.strip()
-            self.plot_dataset(dic_image, deck)
+        self.zz = zz
+        self.plot_grid = plot_grid
+
+        for index, dic_image in enumerate(dic_data.dataframe):
+            self.plot_dataset(dic_data.dic_paths[index], dic_image, deck)
+            if plot_deltas == True:
+                self.plot_deltas(dic_data.dic_paths[index], dic_image, deck)
+            if plot_heatmaps == True:
+                self.build_deltaheatmaps(dic_data.dic_paths[index], dic_image, deck)
             
-    def plot_dataset(self, df,deck, plot_grid = True):
+            
+    def plot_dataset(self, file_name, df, deck):
         print(df.head())
         x = list(set( df['"x"'].values ))
         y = list(set( df['"y"'].values ))
-        z = df['"e1"']
+        z = df[self.zz]
         zv = z.values
         zv = np.array(zv)
         zv = zv.reshape((len(y), len(x)))
         fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
-        if plot_grid == True:
+        if self.plot_grid == True:
             for i in range(0,max(df['"x"']), int(deck.sample_size["i"])):
-                plt.axvline(i,color='red') 
+                plt.axvline(i,color='red', linewidth=0.1) 
             for j in range(0, max(df['"y"']), int(deck.sample_size["j"])):
-                plt.axhline(j,color='red')
+                plt.axhline(j,color='red', linewidth=0.1)
+        plt.title(z.name)
+        plt.clabel(fig, inline=0.1, fontsize=5)
+        plt.legend()
+        
+        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-3]+"png")
+        plt.close()
+
+    
+    def plot_deltas(self, file_name, df, deck):
+
+        x = list(set( df['"x"'].values ))
+        y = list(set( df['"y"'].values ))
+
+        z = df[self.zz.strip("'").strip('"')+"_delta"]
+        zv = z.values
+        zv = np.array(zv)
+        zv = zv.reshape((len(y), len(x)))
+        fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
+        if self.plot_grid == True:
+            for i in range(0,max(df['"x"']), int(deck.sample_size["i"])):
+                plt.axvline(i,color='red', linewidth=0.1) 
+            for j in range(0, max(df['"y"']), int(deck.sample_size["j"])):
+                plt.axhline(j,color='red', linewidth=0.1)
         plt.title(z.name)
         plt.clabel(fig, inline=0.1, fontsize=5)
         plt.legend()
 
-        plt.show()
+        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"_deltas"+".png")
+        plt.close()
+
     
+    def build_deltaheatmaps(self, file_name, df, deck):
+        import pdb; pdb.set_trace()
