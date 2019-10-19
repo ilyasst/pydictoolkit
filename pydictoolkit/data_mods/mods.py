@@ -3,7 +3,9 @@ import pandas as pd
 class DataMods():
     def __init__(self, dfs):
         self.create_grids(dfs)
+        import pdb; pdb.set_trace()
         self.compute_deltas(dfs)
+        import pdb; pdb.set_trace()
 
     # Adds a grid to the data
     def create_grids(self, dfs, grid_x = 200, grid_y = 200):
@@ -13,7 +15,6 @@ class DataMods():
             y = df['"y"']
             df['region_x']= x//grid_x
             df['region_y'] = y//grid_y
-        return dfs
 
     # Computes the delta between consecutive images
     def compute_deltas(self, dfs):

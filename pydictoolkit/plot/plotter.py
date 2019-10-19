@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 class Plotter():
 
@@ -37,6 +38,10 @@ class Plotter():
         plt.clabel(fig, inline=0.1, fontsize=5)
         plt.legend()
         
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
         plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-3]+"png")
         plt.close()
 
@@ -45,7 +50,6 @@ class Plotter():
 
         x = list(set( df['"x"'].values ))
         y = list(set( df['"y"'].values ))
-
         z = df[self.zz.strip("'").strip('"')+"_delta"]
         zv = z.values
         zv = np.array(zv)
@@ -60,9 +64,14 @@ class Plotter():
         plt.clabel(fig, inline=0.1, fontsize=5)
         plt.legend()
 
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
         plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"_deltas"+".png")
         plt.close()
 
     
     def build_deltaheatmaps(self, file_name, df, deck):
-        import pdb; pdb.set_trace()
+       print("hi")
+       # import pdb; pdb.set_trace()
