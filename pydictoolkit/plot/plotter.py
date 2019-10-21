@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import os
 
 class Plotter():
 
-    def __init__(self, zz, dic_data, deck, 
+    def __init__(self, zz, dic_data, deck, data_modes,
                 plot_grid = False, 
                 plot_deltas = False,
                 plot_heatmaps = False):
@@ -16,10 +17,13 @@ class Plotter():
             self.plot_dataset(dic_data.dic_paths[index], dic_image, deck)
             if plot_deltas == True:
                 self.plot_deltas(dic_data.dic_paths[index], dic_image, deck)
+            
             if plot_heatmaps == True:
-                self.build_deltaheatmaps(dic_data.dic_paths[index], dic_image, deck)
-            
-            
+                for index2, gdf in enumerate(data_modes.grouped):
+                    if index == index2:
+                        import pdb; pdb.set_trace()
+                        self.build_deltaheatmaps(dic_data.dic_paths[index], gdf, deck)    
+
     def plot_dataset(self, file_name, df, deck):
         print(df.head())
         x = list(set( df['"x"'].values ))
@@ -73,5 +77,15 @@ class Plotter():
 
     
     def build_deltaheatmaps(self, file_name, df, deck):
-       print("hi")
-       # import pdb; pdb.set_trace()
+        
+    
+        df = df.pivot('region_y', 'region_x', 'e1_delta')
+        df = df.sort_index(ascending=False)
+        fig, ax = plt.subplots()
+        ax = sns.heatmap(df, linewidths= .5)
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
+        fig.savefig( "./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"_heatmap"+".png")
+        plt.close()
