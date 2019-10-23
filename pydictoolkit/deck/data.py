@@ -26,4 +26,5 @@ class Deck():
                     else:
                         self.dic_path = self.doc["Data"]["Folder"]
                         self.sample_size = self.doc["Region"]
+                        self.target = self.doc["Target Column"]
                 
