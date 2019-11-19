@@ -1,5 +1,5 @@
 Data:
-  Folder: ./dummy_data/
+  Folder: ./pydictoolkit/dummy_data/
 Region:
   i: 200
   j: 200

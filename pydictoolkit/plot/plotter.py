@@ -11,6 +11,7 @@ class Plotter():
                 plot_grid = False, 
                 plot_deltas = False,
                 plot_heatmaps = False,
+                plot_stream = False,
                 create_gif = False):
 
         self.zz = zz
@@ -18,17 +19,49 @@ class Plotter():
 
         for index, dic_image in enumerate(dic_data.dataframe):
             self.plot_dataset(dic_data.dic_paths[index], dic_image, deck)
+
             if plot_deltas == True:
                 self.plot_deltas(dic_data.dic_paths[index], dic_image, deck)
             
             if plot_heatmaps == True:
                 for index2, gdf in enumerate(data_modes.grouped):
                     if index == index2:
-                        self.build_deltaheatmaps(dic_data.dic_paths[index], gdf, deck, data_modes.scale_min, data_modes.scale_max)    
+                        self.build_deltaheatmaps(dic_data.dic_paths[index], gdf, deck, data_modes.scale_min, data_modes.scale_max)
+            
+            if plot_stream == True:
+                self.create_streamplot(dic_data.dic_paths[index], dic_image)
+
         if create_gif == True:
             self.create_gif(data_modes.grouped, deck, data_modes.scale_min, data_modes.scale_max)
+
+
+    def create_streamplot(self, file_name, df):     
+
+        
+
+        x = list(sorted(set( df['"x"'].values )))
+        y = list(sorted(set( df['"y"'].values )))
+        uu = df['"U"']
+        uu = uu.values
+        uu = np.array(uu)
+        uu = uu.reshape((len(y), len(x)))
+
+        vv = df['"V"']
+        vv = vv.values
+        vv = np.array(vv)
+        vv = vv.reshape((len(y), len(x)))
+
+        fig = plt.streamplot(np.array(x), np.array(y), np.array(uu), np.array(vv), color=uu, linewidth=2, cmap='autumn')
+        #fig.colorbar(strm.lines)
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
+        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"-stream"+".png")
+        plt.close()
+
+
     def plot_dataset(self, file_name, df, deck):
-        print(df.head())
         x = list(set( df['"x"'].values ))
         y = list(set( df['"y"'].values ))
         z = df[self.zz]
@@ -132,5 +165,3 @@ class Plotter():
             ax.set_ylim(heatmap_data.shape[0], 0)
 
         animation.FuncAnimation(fig, update_frame, frames=len(dfs)-1, interval=400).save('heatmaps.gif', writer = writer)
-            
-    

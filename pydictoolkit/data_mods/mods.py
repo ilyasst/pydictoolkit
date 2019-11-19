@@ -1,10 +1,14 @@
 import pandas as pd
+import numpy as np
 
 class DataMods():
     def __init__(self, dfs, deck):
+        self.compute_princip_angles(dfs)
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
         self.group_dfs(dfs, deck)
+        
+
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
         grid_x = int(deck.sample_size["i"])
@@ -38,4 +42,7 @@ class DataMods():
         self.scale_max = heat_max
         self.grouped = grouped
 
-
+    def compute_princip_angles(self, dfs):
+        print("Computing principal angles")
+        for df in dfs:
+            df["teta_1"] = np.degrees( np.arctan( df['"exy"']/(df['"exx"']-df['"eyy"']) )/2 )
