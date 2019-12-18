@@ -3,7 +3,6 @@ import numpy as np
 
 class DataMods():
     def __init__(self, dfs, deck):
-        #self.compute_princip_angles(dfs)
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
         self.group_dfs(dfs, deck)
@@ -13,8 +12,8 @@ class DataMods():
         grid_x = int(deck.sample_size["i"])
         grid_y = int(deck.sample_size["j"])
         for df in dfs:
-            x = df['"x"'] 
-            y = df['"y"']
+            x = df["x"] 
+            y = df["y"]
             df['region_x']= x//grid_x
             df['region_y'] = y//grid_y
         

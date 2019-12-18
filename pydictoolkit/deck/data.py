@@ -2,7 +2,7 @@
 #@author: ilyass.tabiai@polymtl.ca
 # Heavily inspired from
 # https://raw.githubusercontent.com/lm2-poly/PeriPyDIC/master/peripydic/IO/deck.py
-import yaml
+import yaml, sys
 import os.path
 
 class Deck():
