@@ -3,12 +3,11 @@ import numpy as np
 
 class DataMods():
     def __init__(self, dfs, deck):
-        self.compute_princip_angles(dfs)
+        #self.compute_princip_angles(dfs)
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
         self.group_dfs(dfs, deck)
         
-
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
         grid_x = int(deck.sample_size["i"])
@@ -18,7 +17,8 @@ class DataMods():
             y = df['"y"']
             df['region_x']= x//grid_x
             df['region_y'] = y//grid_y
-
+        
+    
     # Computes the delta between consecutive images
     def compute_deltas(self, dfs):
         for index, df in enumerate(dfs):
@@ -28,7 +28,7 @@ class DataMods():
                 else:
                     df[column.strip('"').strip("'")+"_delta"] = df[column]-dfs[index-1][column]
 
-    #group dataframes base don regions
+    #group dataframes based on regions
     def group_dfs(self, dfs, deck):
         grouped = []
         f = lambda x: x.mean()
@@ -42,7 +42,3 @@ class DataMods():
         self.scale_max = heat_max
         self.grouped = grouped
 
-    def compute_princip_angles(self, dfs):
-        print("Computing principal angles")
-        for df in dfs:
-            df["teta_1"] = np.degrees( np.arctan( df['"exy"']/(df['"exx"']-df['"eyy"']) )/2 )

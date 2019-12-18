@@ -6,7 +6,7 @@ dic_data = DIC_reader(deck.dic_path)
 
 data_modes = DataMods(dic_data.dataframe, deck)
 
-key = "teta_1"
+key = '"U"'
 
 plott = Plotter(
         key,

@@ -24,6 +24,7 @@ class DIC_reader():
         for csv_name in self.dic_paths:
             pd_data = pd.read_csv(csv_name)
             pd_data.columns = pd_data.columns.str.strip()
+            self.filenamecsv = csv_name
             print("File ", csv_name)
             print("Your keys are: ", pd_data.columns.str.strip())
             dataframe.append( pd_data )
