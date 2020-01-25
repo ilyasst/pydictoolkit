@@ -3,6 +3,7 @@ from pydictoolkit import *
 deck = Deck("deck.yaml")
 
 dic_data = DIC_reader(deck.dic_path)
+dic_report = DIC_measurements(dic_data)
 
 data_modes = DataMods(dic_data.dataframe, deck)
 
@@ -13,9 +14,9 @@ plott = Plotter(
         dic_data, 
         deck, 
         data_modes,
-        plot_grid = True, 
-        plot_deltas = True,
-        plot_heatmaps = True,
+        plot_grid = False, 
+        plot_deltas = False,
+        plot_heatmaps = False,
         plot_stream = True,
         create_gif= False
         )   
