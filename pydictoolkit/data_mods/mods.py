@@ -6,7 +6,7 @@ class DataMods():
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
         self.group_dfs(dfs, deck)
-        #self.compute_shifted_cmap(dfs, deck)
+        self.compute_shifted_cmap(dfs, deck)
         
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
@@ -48,15 +48,17 @@ class DataMods():
         self.scale_max = heat_max
         self.grouped = grouped
 
-    # def compute_shifted_cmap(self, dfs, deck):
-    #     midpoint_f = 1
-    #     for df in dfs:
-    #         midpoint = 1 - df["e1"].max()  / ( df["e1"].max() + abs(df["e1"].min() ) )# between 0 and 1
-    #         if midpoint < midpoint_f:
-    #             midpoint_f = midpoint
-    #         else:
-    #             pass
-    #     import pdb; pdb.set_trace()
-    #     return midpoint_f
-        # start = 0, stop = 1
+    def compute_shifted_cmap(self, dfs, deck):
+        vmax_0 = 0.
+        vmin_0 = 0.
+        for df in dfs:
+            if df["e1"].max() > vmax_0:
+                vmax_0 = df["e1"].max()
+            elif df["e1"].min() < vmin_0:
+                vmin_0 = df["e1"].min()
+            else:
+                pass
+        return vmin_0, vmax_0
+
+
     
