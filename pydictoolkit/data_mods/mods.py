@@ -52,13 +52,14 @@ class DataMods():
         vmax_0 = 0.
         vmin_0 = 0.
         for df in dfs:
-            if df["e1"].max() > vmax_0:
-                vmax_0 = df["e1"].max()
-            elif df["e1"].min() < vmin_0:
-                vmin_0 = df["e1"].min()
+            if df[deck.doc['Target Plot']].max() > vmax_0:
+                vmax_0 = df[deck.doc['Target Plot']].max()
+            elif df[deck.doc['Target Plot']].min() < vmin_0:
+                vmin_0 = df[deck.doc['Target Plot']].min()
             else:
                 pass
-        return vmin_0, vmax_0
+        self.vmin_0 = vmin_0
+        self.vmax_0 = vmax_0
 
 
     

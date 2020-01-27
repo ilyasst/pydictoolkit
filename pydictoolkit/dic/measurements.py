@@ -1,7 +1,7 @@
 import csv
 
 class DIC_measurements:
-    def __init__(self,dfs):
+    def __init__(self,dfs, deck):
         self.report = []
         for index, df in enumerate(dfs.dataframe):
             temp = {}
@@ -10,7 +10,7 @@ class DIC_measurements:
             self.report.append(temp)
         
         self.compute_AOI(dfs.dataframe)
-        self.write_report(dfs.dataframe)
+        self.write_report(dfs.dataframe, deck)
         
 
     def compute_AOI(self,dfs):
@@ -26,7 +26,7 @@ class DIC_measurements:
             
             resolution_y = (df_encr['Y'].max()-df_encr['Y'].min()) / (df_encr['y'].max()-df_encr['y'].min())
 
-            # CALCUL DE LA SURFACE DE L'AOI DU SPECIMEN 
+            # CALCUL DE LA MAX des strains
             max_exx = max(df_encr['exx'].values)
             max_eyy = max(df_encr['eyy'].values)
             max_e1 = max(df_encr['e1'].values)
@@ -42,9 +42,9 @@ class DIC_measurements:
             self.report[index]['max_e2'] = max_e2
 
 
-    def write_report(self, dfs):
+    def write_report(self, dfs, deck):
         csv_columns = []
-        csv_file = "../plots/Report.csv"
+        csv_file = "./plots/Report.csv"
         for key in self.report[0]:
              csv_columns.append(key)
         try:

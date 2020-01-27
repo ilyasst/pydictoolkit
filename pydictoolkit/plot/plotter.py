@@ -34,8 +34,8 @@ class Plotter():
                         self.build_deltaheatmaps(dic_data.dic_paths[index], gdf, deck, data_modes.scale_min, data_modes.scale_max)
             
             if plot_stream == True:
-                self.create_contourplot_log(dic_data.dic_paths[index], dic_image)
-                self.create_contourplot_linear(dic_data.dic_paths[index], dic_image)
+                self.create_contourplot_log(dic_data.dic_paths[index], dic_image, deck, data_modes)
+                self.create_contourplot_linear(dic_data.dic_paths[index], dic_image, deck)
                 self.create_quiver(dic_data.dic_paths[index], dic_image)
                 self.create_streamplot(dic_data.dic_paths[index], dic_image)
 
@@ -56,22 +56,23 @@ class Plotter():
         Z=VV/WW
         return Z 
 
-    def create_contourplot_log(self, file_name, df): 
+    def create_contourplot_log(self, file_name, df, deck, data_modes): 
         x = list(sorted(set( df["x"].values )))
         y = list(sorted(set( df["y"].values )))
-                             
+        
+        #import pdb; pdb.set_trace()
         img_name = file_name[0 : len(file_name) -10] + '.tif'
-        img = plt.imread("/Users/benedictebonnet/pydictoolkit/pydictoolkit/" + img_name)
+        img = plt.imread(img_name)
         fig2, ax = plt.subplots(dpi=300)
         ax.imshow(img, alpha = 1, cmap = 'gray')
         
-        df.loc[df["sigma"] == -1, "e1" ] = np.nan
-        e1 = np.array(df["e1"].values)
+        df.loc[df["sigma"] == -1, deck.doc['Target Plot'] ] = np.nan
+        e1 = np.array(df[deck.doc['Target Plot']].values)
         e1 = e1.reshape(len(y), len(x))
 
         levels = [-1, -0.1, -0.01, -0.001, 0., 0.001, 0.01, 0.1, 1]
         ax.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
-        pcm = ax.pcolormesh(x,y,e1,norm=matplotlib.colors.SymLogNorm(linthresh=0.001, linscale=0.1, vmin=df["e1"].min(), vmax=df["e1"].max()),
+        pcm = ax.pcolormesh(x,y,e1,norm=matplotlib.colors.SymLogNorm(linthresh=0.001, linscale=0.1, vmin=data_modes.vmin_0, vmax=data_modes.vmax_0),
              cmap='plasma')
         fig2.colorbar(pcm, ax=ax, extend = 'both')
 
@@ -82,7 +83,7 @@ class Plotter():
         plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"-contourplot-log"+".png")
         plt.close()
 
-    def create_contourplot_linear(self, file_name, df): 
+    def create_contourplot_linear(self, file_name, df, deck): 
             x = list(sorted(set( df["x"].values )))
             y = list(sorted(set( df["y"].values )))
                                 
