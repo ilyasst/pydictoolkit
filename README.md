@@ -4,6 +4,12 @@ Toolkit to further analyze 2D and 3D Digital Image Correlation results. The curr
 
 # Main features
 
+- [x] Compute the difference between consecutive images (the "delta") for the available fields (displacement and strain fields)
+- [x] Ability to divide the AOI into equal rectangular areas of prescribed size and to plot heatmaps of the "delta" for any field
+- [x] Compute the minimal and maximal values of a field for a set of CSV results (good values to know if we want to have a single scale for all the provided CSV files)
+- [x] Contour plot for the displacement or strain fields with automatically scaled color bar
+- [x] Streamline plots of the `U` and `V` displacement field
+- [ ] Streamline plots of the first or second principal strain fields
 
 
 # Quickstart
@@ -116,6 +122,11 @@ Let's make add a few screenshots to show which CSV files we mean exactly.
 An example:
 
 * Description of the example data and credit where it's due
+
+## Contribute ?
+
+Maybe you need something for your own project, maybe you found a mistake or something you could improve and feeling like helping, in any case, we'll be happy to get in touch. Please leave us an Issue, or a Pull Request (we welcome those!).
+
 
 # Disclaimer
 
