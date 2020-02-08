@@ -14,13 +14,13 @@ import matplotlib.image as mpimg
 
 class Plotter():
 
-    def __init__(self, zz, dic_data, deck, data_modes,
+    def __init__(self, dic_data, deck, data_modes,
                 plot_grid = False, 
                 plot_deltas = False,
                 plot_heatmaps = False,
                 plot_stream = False,
                 create_gif = False):
-        self.zz = zz
+        self.zz = deck.doc["Plots"]['Target Plot']
         self.plot_grid = plot_grid
         
         for index, dic_image in enumerate(dic_data.dataframe):
@@ -70,8 +70,8 @@ class Plotter():
         fig, ax = plt.subplots(dpi=300)
         ax.imshow(img, alpha = 1, cmap = 'gray')
         
-        df.loc[df["sigma"] == -1, deck.doc['Target Plot'] ] = np.nan
-        e1 = np.array(df[deck.doc['Target Plot']].values)
+        df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
+        e1 = np.array(df[deck.doc["Plots"]['Target Plot']].values)
         e1 = e1.reshape(len(y), len(x))
 
         levels = np.sort(np.append( np.append( -np.logspace(0.1, abs(data_modes.vmin_0),10) , np.linspace(-0.01,0.01,5) ), np.logspace(0.1,data_modes.vmax_0,15)))
@@ -96,7 +96,7 @@ class Plotter():
         fig, ax = plt.subplots(dpi=300)
         ax.imshow(img, alpha = 1, cmap = 'gray')
 
-        df.loc[df["sigma"] == -1, deck.doc['e1'] ] = np.nan  
+        df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan  
         e1 = np.array(df["e1"].values)
         e1 = e1.reshape(len(y), len(x))
         levels = np.linspace(data_modes.vmin_0, data_modes.vmax_0,10) 
@@ -183,8 +183,8 @@ class Plotter():
          x = list(sorted(set( df["x"].values )))
          y = list(sorted(set( df["y"].values )))
          
-         df.loc[df["sigma"] == -1, deck.doc['Target Plot'] ] = np.nan
-         zv = 100*(df[deck.doc['Target Plot']].values)
+         df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
+         zv = 100*(df[deck.doc["Plots"]['Target Plot']].values)
          zv = zv.reshape((len(y), len(x)))
          
          fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
@@ -197,7 +197,7 @@ class Plotter():
                  plt.axvline(i,color='red', linewidth=0.1) 
              for j in range(0, max(df["y"]), int(deck.sample_size["j"])):
                  plt.axhline(j,color='red', linewidth=0.1)
-         plt.title(deck.doc['Target Plot'])
+         plt.title(deck.doc["Plots"]['Target Plot'])
          plt.clabel(fig, inline=0.1, fontsize=5)
          plt.legend()
         
@@ -213,8 +213,8 @@ class Plotter():
         x = list(sorted(set( df["x"].values )))
         y = list(sorted(set( df["y"].values )))
         
-        df.loc[df["sigma"] == -1, deck.doc['Target Column'] ] = np.nan
-        zv = 100*(df[deck.doc['Target Column']].values)
+        df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Column'] ] = np.nan
+        zv = 100*(df[deck.doc["Plots"]['Target Column']].values)
         
         z1 = df['e1'].values
         z2 = df['e2'].values
@@ -253,7 +253,7 @@ class Plotter():
                 plt.axvline(i,color='red', linewidth=0.1) 
             for j in range(0, max(df["y"]), int(deck.sample_size["j"])):
                 plt.axhline(j,color='red', linewidth=0.1)
-        plt.title(deck.doc['Target Column'])
+        plt.title(deck.doc["Plots"]['Target Column'])
         plt.clabel(fig, inline=0.1, fontsize=5)
         plt.legend()
 

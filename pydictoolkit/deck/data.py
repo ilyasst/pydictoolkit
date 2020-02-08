@@ -23,8 +23,26 @@ class Deck():
                     if not "Folder" in self.doc["Data"]:
                         print ("YamlTagError: Folder within Data tag is a mandatory tag")
                         sys.exit(1)
+                        
+                if not "Plots" in self.doc:
+                    print ("YamlTagError: Plots tag is a mandatory tag")
+                    sys.exit(1)                    
+                else:
+                    if not "Target Plot" in self.doc["Plots"]:
+                        print ("YamlTagError: Target Plot within Plots tag is a mandatory tag")
+                        sys.exit(1)
+                    if not "Groups" in self.doc["Plots"]:
+                        print ("YamlTagError: Groups within Plots tag is a mandatory tag")
+                        sys.exit(1)
                     else:
-                        self.dic_path = self.doc["Data"]["Folder"]
-                        self.sample_size = self.doc["Region"]
-                        self.target = self.doc["Target Column"]
+                        if not "Region" in self.doc["Plots"]["Groups"]:
+                            print ("YamlTagError: Region within Plots-Groups tag is a mandatory tag")
+                            sys.exit(1)   
+                    if not "Target Column" in self.doc["Plots"]:
+                        print ("YamlTagError: Target Column within Plots tag is a mandatory tag")
+                        sys.exit(1)  
+                                      
+        self.dic_path = self.doc["Data"]["Folder"]
+        self.sample_size = self.doc["Plots"]["Groups"]["Region"]
+        self.target = self.doc["Plots"]["Target Column"]
                 

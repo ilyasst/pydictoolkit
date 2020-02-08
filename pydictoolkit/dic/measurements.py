@@ -1,7 +1,7 @@
 import csv
 
 class DIC_measurements:
-    def __init__(self,dfs, deck):
+    def __init__(self, dfs, deck):
         self.report = []
         for index, df in enumerate(dfs.dataframe):
             temp = {}

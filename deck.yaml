@@ -1,7 +1,10 @@
 Data:
   Folder: ./pydictoolkit/dummy_data/
-Target Plot: e1
-Region:
-  i: 200
-  j: 200
-Target Column: e1_delta
+
+Plots:
+  Target Plot: e1
+  Groups:
+    Region:
+      i: 200
+      j: 200
+  Target Column: e1_delta

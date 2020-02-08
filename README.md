@@ -10,6 +10,8 @@ Toolkit to further analyze 2D and 3D Digital Image Correlation results. The curr
 - [x] Contour plot for the displacement or strain fields with automatically scaled color bar
 - [x] Streamline plots of the `U` and `V` displacement field
 - [ ] Streamline plots of the first or second principal strain fields
+- [ ] Allow the user to be able to change the name of the spatial variables (`x` instead of `X` in the case of VIC2D since there is no `X (mm)` by default)
+- [ ] Increase the quality (dpi) of the plots, or even better turn it into a deck variable
 
 
 # Quickstart
@@ -25,7 +27,12 @@ cd pydictoolkit
 python3 -m venv .env
 source .env/bin/activate
 pip install -r requirements.txt
-python main.py
+python main.py -h
+```
+
+Basic usage:
+```
+python main.py -d "./deck.yaml"
 ```
 
 # Getting started
@@ -55,34 +62,25 @@ You can then load your virtual environment using:
 source .env/bin/activate
 ```
 
-In order to exit it, use the `dectivate` command.
+In order to exit it, use the `deactivate` command.
 
 ## Usage
 
 In order to use the code, you will need to provide:
 
 * A valid `deck.yaml` file (the content of this file is further detailed in the `Input description` section)
-* Your VIC3D CSV grid outputs and stereo-images in the folder specified in the `deck.yaml` file
-* A valid `main.py` file (which will hopefully be deprecated at some point)
+* Your VIC3D CSV grid outputs (`.csv`) and stereo-images (`.tiff`) in the folder specified in the `deck.yaml` file
 
-The `main.py` file contains a description of the code structure. The only parameter you should change in this file is the `deck = Deck("deck.yaml")`. Change "deck.yaml" to the relative path to your `deck.yaml` file with respect to the `main.py` file. The `main.py` file will be removed at some point, it currently shows the flow of the code within pydictoolkit. 
-
-```python
-from pydictoolkit import *
-
-deck = Deck("deck.yaml")
-
-dic_data = DIC_reader(deck.dic_path)
-dic_report = DIC_measurements(dic_data)
-data_modes = DataMods(dic_data.dataframe, deck)
-plott = Plotter(
-        key,
-        dic_data, 
-        deck, 
-        data_modes
-        )   
+You can then run pydictoolkit using:
 ```
+python main.py -d "PATH_TO_DECK"
+```
+where `PATH_TO_DECK` is the path to your deck.yaml file.
 
+A short help/reminder can be accessed using:
+```
+python main.py -h
+```
 
 # Input description
 
@@ -93,11 +91,14 @@ Main structure of the `deck.yaml` file:
 ```yaml
 Data:
   Folder: ./pydictoolkit/dummy_data/
-Target Plot: e1
-Region:
-  i: 200
-  j: 200
-Target Column: e1_delta
+
+Plots:
+  Target Plot: e1
+  Groups:
+    Region:
+      i: 200
+      j: 200
+  Target Column: e1_delta
 
 ```
 

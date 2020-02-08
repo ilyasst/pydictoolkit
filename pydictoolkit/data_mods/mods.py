@@ -6,9 +6,8 @@ class DataMods():
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
         self.compute_relative_errors(dfs)
-        #self.group_dfs(dfs, deck)
+        self.group_dfs(dfs, deck)
         self.compute_shifted_cmap(dfs, deck)
-        #self.compare_to_ref(dfs, deck)
         
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
@@ -43,9 +42,8 @@ class DataMods():
                         df[column+"_delta_relative"] = 100*(df[column+"_delta"].divide(df[column].max()))
                     except KeyError: 
                         pass
-            #df.to_csv('../out.csv')
 
-    group dataframes based on regions
+    #group dataframes based on regions
     def group_dfs(self, dfs, deck):
         grouped = []
         f = lambda x: x.mean()
@@ -66,10 +64,10 @@ class DataMods():
         vmax_0 = 0.
         vmin_0 = 0.
         for df in dfs:
-            if df[deck.doc['Target Plot']].max() > vmax_0:
-                vmax_0 = df[deck.doc['Target Plot']].max()
-            elif df[deck.doc['Target Plot']].min() < vmin_0:
-                vmin_0 = df[deck.doc['Target Plot']].min()
+            if df[deck.doc["Plots"]['Target Plot']].max() > vmax_0:
+                vmax_0 = df[deck.doc["Plots"]['Target Plot']].max()
+            elif df[deck.doc["Plots"]['Target Plot']].min() < vmin_0:
+                vmin_0 = df[deck.doc["Plots"]['Target Plot']].min()
             else:
                 pass
         self.vmin_0 = vmin_0
