@@ -5,8 +5,10 @@ class DataMods():
     def __init__(self, dfs, deck):
         self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
-        self.group_dfs(dfs, deck)
+        self.compute_relative_errors(dfs)
+        #self.group_dfs(dfs, deck)
         self.compute_shifted_cmap(dfs, deck)
+        #self.compare_to_ref(dfs, deck)
         
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
@@ -27,11 +29,23 @@ class DataMods():
                     pass
                 else:
                     try: 
-                        df[column.strip('"').strip("'")+"_delta"] = df[column]-dfs[index-1][column]
+                        df[column+"_delta"] = df[column]-dfs[0][column] #index-1
                     except KeyError: 
                         pass
 
-    #group dataframes based on regions
+    def compute_relative_errors(self, dfs):
+        for index, df in enumerate(dfs):
+            if index == 0:
+                pass
+            else:
+                for column in df:                    
+                    try: 
+                        df[column+"_delta_relative"] = 100*(df[column+"_delta"].divide(df[column].max()))
+                    except KeyError: 
+                        pass
+            #df.to_csv('../out.csv')
+
+    group dataframes based on regions
     def group_dfs(self, dfs, deck):
         grouped = []
         f = lambda x: x.mean()

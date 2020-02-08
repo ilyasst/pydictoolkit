@@ -9,6 +9,7 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import scipy
 import scipy.ndimage
+from scipy.stats import norm
 import matplotlib.image as mpimg
 
 class Plotter():
@@ -26,7 +27,10 @@ class Plotter():
             self.plot_dataset(dic_data.dic_paths[index], dic_image, deck)
 
             if plot_deltas == True:
-                self.plot_deltas(dic_data.dic_paths[index], dic_image, deck)
+                if index == 0:
+                    pass
+                else:
+                    self.plot_deltas(dic_data.dic_paths[index], dic_image, deck)
             
             if plot_heatmaps == True:
                 for index2, gdf in enumerate(data_modes.grouped):
@@ -35,7 +39,7 @@ class Plotter():
             
             if plot_stream == True:
                 self.create_contourplot_log(dic_data.dic_paths[index], dic_image, deck, data_modes)
-                self.create_contourplot_linear(dic_data.dic_paths[index], dic_image, deck)
+                self.create_contourplot_linear(dic_data.dic_paths[index], dic_image, deck, data_modes)
                 self.create_quiver(dic_data.dic_paths[index], dic_image)
                 self.create_streamplot(dic_data.dic_paths[index], dic_image)
 
@@ -60,21 +64,21 @@ class Plotter():
         x = list(sorted(set( df["x"].values )))
         y = list(sorted(set( df["y"].values )))
         
-        #import pdb; pdb.set_trace()
+        
         img_name = file_name[0 : len(file_name) -10] + '.tif'
         img = plt.imread(img_name)
-        fig2, ax = plt.subplots(dpi=300)
+        fig, ax = plt.subplots(dpi=300)
         ax.imshow(img, alpha = 1, cmap = 'gray')
         
         df.loc[df["sigma"] == -1, deck.doc['Target Plot'] ] = np.nan
         e1 = np.array(df[deck.doc['Target Plot']].values)
         e1 = e1.reshape(len(y), len(x))
 
-        levels = [-1, -0.1, -0.01, -0.001, 0., 0.001, 0.01, 0.1, 1]
-        ax.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
+        levels = np.sort(np.append( np.append( -np.logspace(0.1, abs(data_modes.vmin_0),10) , np.linspace(-0.01,0.01,5) ), np.logspace(0.1,data_modes.vmax_0,15)))
+        ax.contour(x, y, e1, colors = 'k', linewidths = 0.5, levels = levels) 
         pcm = ax.pcolormesh(x,y,e1,norm=matplotlib.colors.SymLogNorm(linthresh=0.001, linscale=0.1, vmin=data_modes.vmin_0, vmax=data_modes.vmax_0),
              cmap='plasma')
-        fig2.colorbar(pcm, ax=ax, extend = 'both')
+        fig.colorbar(pcm, ax=ax, extend = 'both')
 
         plot_dir = "./plots/"
         check_folder = os.path.isdir(plot_dir)
@@ -83,28 +87,29 @@ class Plotter():
         plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"-contourplot-log"+".png")
         plt.close()
 
-    def create_contourplot_linear(self, file_name, df, deck): 
-            x = list(sorted(set( df["x"].values )))
-            y = list(sorted(set( df["y"].values )))
+    def create_contourplot_linear(self, file_name, df, deck, data_modes): 
+        x = list(sorted(set( df["x"].values )))
+        y = list(sorted(set( df["y"].values )))
                                 
-            img_name = file_name[0 : len(file_name) -10] + '.tif'
-            img = plt.imread("/Users/benedictebonnet/pydictoolkit/pydictoolkit/" + img_name)
-            fig, ax = plt.subplots(dpi=300)
-            ax.imshow(img, alpha = 1, cmap = 'gray')
-                     
-            e1 = np.array(df["e1"].values) 
-            e1 = e1.reshape(len(y), len(x))
+        img_name = file_name[0 : len(file_name) -10] + '.tif'
+        img = plt.imread(img_name)
+        fig, ax = plt.subplots(dpi=300)
+        ax.imshow(img, alpha = 1, cmap = 'gray')
 
-            cs = plt.contourf(x, y, e1, origin = 'lower', extend = 'both', cmap = 'plasma', alpha = 0.5) 
-            plt.contour(x, y, e1, colors = 'k', linewidths = 0.5) 
-            fig.colorbar(cs)
+        df.loc[df["sigma"] == -1, deck.doc['e1'] ] = np.nan  
+        e1 = np.array(df["e1"].values)
+        e1 = e1.reshape(len(y), len(x))
+        levels = np.linspace(data_modes.vmin_0, data_modes.vmax_0,10) 
+        cs = plt.contourf(x, y, e1, origin = 'lower', extend = 'both', cmap = 'plasma', alpha = 0.5) 
+        plt.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
+        fig.colorbar(cs)
 
-            plot_dir = "./plots/"
-            check_folder = os.path.isdir(plot_dir)
-            if not check_folder:
-                os.makedirs(plot_dir)
-            plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"-contourplot-linear"+".png")
-            plt.close()
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
+        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"-contourplot-linear"+".png")
+        plt.close()
 
     def create_quiver(self, file_name, df):  
         x = list(sorted(set( df["x"].values )))
@@ -123,7 +128,7 @@ class Plotter():
         self.contour_ = contour_.reshape((len(y), len(x)))
     
         img_name = file_name[0 : len(file_name) -10] + '.tif'
-        img = plt.imread("/Users/benedictebonnet/pydictoolkit/pydictoolkit/" + img_name)
+        img = plt.imread(img_name)
         fig, ax = plt.subplots(dpi=300)
         ax.imshow(img, cmap = plt.get_cmap('gray'), alpha = 1)
 
@@ -149,7 +154,7 @@ class Plotter():
         y = list(sorted(set( df["y"].values )))
 
         img_name = file_name[0 : len(file_name) -10] + '.tif'
-        img = plt.imread("../../" + img_name)
+        img = plt.imread(img_name)
         
         fig, ax = plt.subplots(dpi=300)
         ax.imshow(img, cmap = plt.get_cmap('gray'), alpha = 1)
@@ -175,19 +180,24 @@ class Plotter():
 
     def plot_dataset(self, file_name, df, deck):
          df = df.sort_index(axis=1, level='"x"', ascending=False)
-         x = list(set( df["x"].values ))
-         y = list(set( df["y"].values ))
-         z = df[self.zz]
-         zv = z.values
-         zv = np.array(zv)
+         x = list(sorted(set( df["x"].values )))
+         y = list(sorted(set( df["y"].values )))
+         
+         df.loc[df["sigma"] == -1, deck.doc['Target Plot'] ] = np.nan
+         zv = 100*(df[deck.doc['Target Plot']].values)
          zv = zv.reshape((len(y), len(x)))
+         
          fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
+         cs = plt.contourf(x, y, zv, origin = 'lower', extend = 'both', cmap = 'plasma', alpha = 0.5)
+         cbar = plt.colorbar(cs)
+         cbar.ax.set_xlabel('Strain (%)')
+
          if self.plot_grid == True:
              for i in range(0,max(df["x"]), int(deck.sample_size["i"])):
                  plt.axvline(i,color='red', linewidth=0.1) 
              for j in range(0, max(df["y"]), int(deck.sample_size["j"])):
                  plt.axhline(j,color='red', linewidth=0.1)
-         plt.title(z.name)
+         plt.title(deck.doc['Target Plot'])
          plt.clabel(fig, inline=0.1, fontsize=5)
          plt.legend()
         
@@ -199,20 +209,51 @@ class Plotter():
          plt.close()
     
     def plot_deltas(self, file_name, df, deck):
+        df = df.sort_index(axis=1, level='"x"', ascending=False)
+        x = list(sorted(set( df["x"].values )))
+        y = list(sorted(set( df["y"].values )))
+        
+        df.loc[df["sigma"] == -1, deck.doc['Target Column'] ] = np.nan
+        zv = 100*(df[deck.doc['Target Column']].values)
+        
+        z1 = df['e1'].values
+        z2 = df['e2'].values
+        zv = abs(np.divide(-z2, z1))
+        mu, std = norm.fit(zv)
+        plt.hist(zv, bins = 3, density = True, alpha=0.6, color='g')
+        amin, amax = np.nanmin(zv), np.nanmax(zv)
+        a = np.linspace(amin, amax, 100)
+        p = norm.pdf(a, mu, std)
+        plt.plot(a, p, 'k', linewidth=2)
+        title = "Fit results e1 percent mu = %.2f,  std = %.2f" % (mu, std)
+        plt.title(title)
+        plot_dir = "./plots/"
+        check_folder = os.path.isdir(plot_dir)
+        if not check_folder:
+            os.makedirs(plot_dir)
+        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"_gauss"+".png")
+        plt.close()
 
-        x = list(set( df["x"].values ))
-        y = list(set( df["y"].values ))
-        z = df[self.zz.strip("'").strip('"')+"_delta"]
-        zv = z.values
-        zv = np.array(zv)
-        zv = zv.reshape((len(y), len(x)))
+        # test pour calcul de nu
+        z1 = df['e1'].values
+        z1[abs(z1)<0.00001]=np.nan
+        z1 = z1.reshape((len(y), len(x)))
+        z2 = df['e2'].values
+        z2[abs(z2)<0.00001]=np.nan
+        z2 = z2.reshape((len(y), len(x)))
+        zv = abs(np.divide(-z2, z1))
+        #zv = df[deck.doc['Target Column']].values
+        #zv = zv.reshape((len(y), len(x)))
         fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
+        cs = plt.contourf(x, y, zv, origin = 'lower', extend = 'both', cmap = 'plasma', alpha = 0.5)
+        cbar = plt.colorbar(cs)
+        cbar.ax.set_xlabel('Strain (%)')
         if self.plot_grid == True:
             for i in range(0,max(df["x"]), int(deck.sample_size["i"])):
                 plt.axvline(i,color='red', linewidth=0.1) 
             for j in range(0, max(df["y"]), int(deck.sample_size["j"])):
                 plt.axhline(j,color='red', linewidth=0.1)
-        plt.title(z.name)
+        plt.title(deck.doc['Target Column'])
         plt.clabel(fig, inline=0.1, fontsize=5)
         plt.legend()
 

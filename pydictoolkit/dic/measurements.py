@@ -9,11 +9,11 @@ class DIC_measurements:
             temp['index'] = index
             self.report.append(temp)
         
-        self.compute_AOI(dfs.dataframe)
+        self.compute_measurements(dfs.dataframe)
         self.write_report(dfs.dataframe, deck)
         
 
-    def compute_AOI(self,dfs):
+    def compute_measurements(self,dfs):
         for index, df in enumerate(dfs):
             encr = df['sigma'] != -1.0
             df_encr = df[encr]
