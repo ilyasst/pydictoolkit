@@ -3,8 +3,26 @@ Data:
 
 Plots:
   Target Plot: e1
-  Groups:
+
+  Heatmaps:
+    Plot_it: true
     Region:
       i: 200
       j: 200
-  Target Column: e1_delta
+    Gif_it: true
+
+  Contour Plots:
+    Linear:
+      Plot_it: true
+    Log:
+      Plot_it: true
+
+  Quiver:
+    Plot_it: true
+
+  Streamplots:
+    Plot_it: true
+
+  Incremental Contour:
+    Plot_it: true
+    Target Plot: e1_delta

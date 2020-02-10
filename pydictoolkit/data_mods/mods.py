@@ -3,16 +3,20 @@ import numpy as np
 
 class DataMods():
     def __init__(self, dfs, deck):
-        self.create_grids(dfs, deck)
         self.compute_deltas(dfs)
+
+        plot_heatmaps = deck.doc["Plots"]["Heatmaps"]["Plot_it"]
+        if plot_heatmaps.lower() == "true":
+            self.create_grids(dfs, deck)
+            self.group_dfs(dfs, deck)
+
         self.compute_relative_errors(dfs)
-        self.group_dfs(dfs, deck)
         self.compute_shifted_cmap(dfs, deck)
         
     # Adds a grid to the data
     def create_grids(self, dfs, deck):
-        grid_x = int(deck.sample_size["i"])
-        grid_y = int(deck.sample_size["j"])
+        grid_x = int(deck.heatmaps_sample_size["i"])
+        grid_y = int(deck.heatmaps_sample_size["j"])
         for df in dfs:
             x = df["x"] 
             y = df["y"]
@@ -54,8 +58,8 @@ class DataMods():
                 df_grouped = df.groupby(["region_x", "region_y"]).apply(f)
                 grouped.append(df_grouped)
         
-        heat_min = min([min(df[deck.target]) for df in grouped])
-        heat_max = max([max(df[deck.target]) for df in grouped])
+        heat_min = min([min(df[deck.plot_inccontour_target]) for df in grouped])
+        heat_max = max([max(df[deck.plot_inccontour_target]) for df in grouped])
         self.scale_min = heat_min
         self.scale_max = heat_max
         self.grouped = grouped

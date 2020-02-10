@@ -9,6 +9,7 @@ if __name__ == "__main__":
                     dest="deck",
                     type=str,
                     help="provide the path to your deck file (please see README.md)",
+                    default="./deck.yaml",
                     required=True)
 
     args = parser.parse_args()
@@ -24,7 +25,7 @@ if __name__ == "__main__":
 
     deck = Deck(args.deck)
 
-    dic_data = DIC_reader(deck.dic_path)
+    dic_data = DIC_reader(deck.data_folder)
     dic_report = DIC_measurements(dic_data, deck)
 
     data_modes = DataMods(dic_data.dataframe, deck)
@@ -33,9 +34,5 @@ if __name__ == "__main__":
             dic_data, 
             deck, 
             data_modes,
-            plot_grid = True, 
-            plot_deltas = True,
-            plot_heatmaps = True,
-            plot_stream = True,
-            create_gif= True
+            plot_deltas = False,
             )   
