@@ -29,8 +29,6 @@ class Plotter():
             index = self.index
             if plot_contour_linear.lower() == "true":
                 self.create_contourplot_linear(dic_data.dic_paths[index], dic_image, deck, data_modes)
-                if gif_contourlin.lower() == "true":
-                    self.create_contourplotlin_gif(dic_data.dataframe, deck, data_modes)
             if plot_contour_log.lower() == "true":
                 self.create_contourplot_log(dic_data.dic_paths[index], dic_image, deck, data_modes)
             if plot_quiver.lower() == "true":
@@ -53,6 +51,9 @@ class Plotter():
             
             if gif_heatmaps == "true":
                 self.create_heatmaps_gif(data_modes.grouped, deck, data_modes.scale_min, data_modes.scale_max)
+
+        if gif_contourlin.lower() == "true":
+            self.create_contourplotlin_gif(dic_data.dataframe, deck, data_modes, dic_data.dic_paths)
 
 
     def filter_NaN_Matrix(self, U, sigVal):  
@@ -312,12 +313,12 @@ class Plotter():
             #need to manually set y_lim to avoi cropping of top and bottom cells                
             ax.set_ylim(heatmap_data.shape[0], 0)
 
-        animation.FuncAnimation(fig, update_frame, frames=len(dfs)-1, interval=400).save('heatmaps.gif', writer = writer)
+        animation.FuncAnimation(fig, update_frame, frames=len(dfs)-1, interval=400).save('./plots/heatmaps.gif', writer = writer)
 
 
-    def create_contourplotlin_gif(self, dfs, deck, data_modes):
+    def create_contourplotlin_gif(self, dfs, deck, data_modes, filenames):
         #set base plotting space 
-        fig, ax = plt.subplots(dpi=300)
+        fig, ax = plt.subplots(dpi=200, figsize=(12,10))
         x = list(sorted(set( dfs[0]["x"].values )))
         y = list(sorted(set( dfs[0]["y"].values )))
 
@@ -329,8 +330,13 @@ class Plotter():
 
         def update_frame_log(i):
             plt.clf()
+
+            img_name = filenames[i][0 : len(filenames[i]) -10] + '.tif'
+            img = plt.imread(img_name)
+            plt.imshow(img, alpha = 1, cmap = 'gray')
+
             df = next(data_frames_iterator)
-            
+
             df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
             e1 = np.array(df[deck.doc["Plots"]['Target Plot']].values)
             e1 = e1.reshape(len(y), len(x))
@@ -342,4 +348,4 @@ class Plotter():
 
             return cont
 
-        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('contourplotlog.gif', writer = writer)
+        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('./plots/contourplotlog.gif', writer = writer)
