@@ -3,7 +3,6 @@ import matplotlib
 from matplotlib import animation
 import seaborn as sns
 import numpy as np
-import cmocean
 import os
 from mpl_toolkits.axes_grid1 import AxesGrid
 from mpl_toolkits.axes_grid1 import make_axes_locatable
