@@ -348,4 +348,4 @@ class Plotter():
 
             return cont
 
-        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('./plots/contourplotlog.gif', writer = writer)
+        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('./plots/contourplotlin.gif', writer = writer)
