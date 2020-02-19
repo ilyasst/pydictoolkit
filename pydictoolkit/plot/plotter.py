@@ -24,6 +24,7 @@ class Plotter():
         plot_streamplots = deck.doc["Plots"]["Streamplots"]["Plot_it"] 
         gif_heatmaps = deck.doc["Plots"]["Heatmaps"]["Gif_it"] 
         gif_contourlin = deck.doc["Plots"]["Contour Plots"]["Linear"]["Gif_it"] 
+        gif_contourlog = deck.doc["Plots"]["Contour Plots"]["Log"]["Gif_it"] 
        
         for self.index, dic_image in enumerate(dic_data.dataframe):
             index = self.index
@@ -54,6 +55,9 @@ class Plotter():
 
         if gif_contourlin.lower() == "true":
             self.create_contourplotlin_gif(dic_data.dataframe, deck, data_modes, dic_data.dic_paths)
+        
+        if gif_contourlog.lower() == "true":
+            self.create_contourplotlog_gif(dic_data.dataframe, deck, data_modes, dic_data.dic_paths)
 
 
     def filter_NaN_Matrix(self, U, sigVal):  
@@ -76,7 +80,7 @@ class Plotter():
         
         img_name = file_name[0 : len(file_name) -10] + '.tif'
         img = plt.imread(img_name)
-        fig, ax = plt.subplots(dpi=300)
+        fig, ax = plt.subplots(dpi=300,)
         ax.imshow(img, alpha = 1, cmap = 'gray')
         
         df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
@@ -223,33 +227,6 @@ class Plotter():
         
         df.loc[df["sigma"] == -1, deck.plot_inccontour_target ] = np.nan
         zv = 100*(df[deck.plot_inccontour_target].values)
-        
-        z1 = df['e1'].values
-        z2 = df['e2'].values
-        zv = abs(np.divide(-z2, z1))
-        mu, std = norm.fit(zv)
-        plt.hist(zv, bins = 3, density = True, alpha=0.6, color='g')
-        amin, amax = np.nanmin(zv), np.nanmax(zv)
-        a = np.linspace(amin, amax, 100)
-        p = norm.pdf(a, mu, std)
-        plt.plot(a, p, 'k', linewidth=2)
-        title = "Fit results e1 percent mu = %.2f,  std = %.2f" % (mu, std)
-        plt.title(title)
-        plot_dir = "./plots/"
-        check_folder = os.path.isdir(plot_dir)
-        if not check_folder:
-            os.makedirs(plot_dir)
-        plt.savefig("./plots/"+self.zz.strip('"')+"-"+file_name[:-4]+"_gauss"+".png")
-        plt.close()
-
-        # test pour calcul de nu
-        z1 = df['e1'].values
-        z1[abs(z1)<0.00001]=np.nan
-        z1 = z1.reshape((len(y), len(x)))
-        z2 = df['e2'].values
-        z2[abs(z2)<0.00001]=np.nan
-        z2 = z2.reshape((len(y), len(x)))
-        zv = abs(np.divide(-z2, z1))
         fig = plt.contour(x, y, zv, levels=8, linewidths=0.4, colors="black")
         cs = plt.contourf(x, y, zv, origin = 'lower', extend = 'both', cmap = 'plasma', alpha = 0.5)
         cbar = plt.colorbar(cs)
@@ -343,6 +320,41 @@ class Plotter():
 
             levels = np.sort(np.linspace(data_modes.vmin_0, data_modes.vmax_0,20))
             cont = plt.pcolormesh(x,y,e1,vmin=data_modes.vmin_0, vmax=data_modes.vmax_0,cmap='plasma')
+            plt.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
+            plt.colorbar(cont)
+
+            return cont
+
+        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('./plots/contourplotlin.gif', writer = writer)
+
+
+    def create_contourplotlog_gif(self, dfs, deck, data_modes, filenames):
+        #set base plotting space 
+        fig, ax = plt.subplots(dpi=92, figsize=(12,10))
+        x = list(sorted(set( dfs[0]["x"].values )))
+        y = list(sorted(set( dfs[0]["y"].values )))
+
+        # create iterator
+        data_frames_iterator = iter(dfs)
+
+        # set up formatting of the gif later
+        writer='matplotlib.animation.PillowWriter'
+
+        def update_frame_log(i):
+            plt.clf()
+
+            img_name = filenames[i][0 : len(filenames[i]) -10] + '.tif'
+            img = plt.imread(img_name)
+            plt.imshow(img, alpha = 1, cmap = 'gray')
+
+            df = next(data_frames_iterator)
+
+            df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
+            e1 = np.array(df[deck.doc["Plots"]['Target Plot']].values)
+            e1 = e1.reshape(len(y), len(x))
+
+            levels = np.sort(np.append( np.append( -np.logspace(0.1, abs(data_modes.vmin_0),10) , np.linspace(-0.01,0.01,5) ), np.logspace(0.1,data_modes.vmax_0,15)))
+            cont = plt.pcolormesh(x,y,e1,norm=matplotlib.colors.SymLogNorm(linthresh=0.001, linscale=0.1, vmin=data_modes.vmin_0, vmax=data_modes.vmax_0), vmin=data_modes.vmin_0, vmax=data_modes.vmax_0,cmap='plasma')
             plt.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
             plt.colorbar(cont)
 

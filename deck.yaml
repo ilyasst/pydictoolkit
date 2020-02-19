@@ -13,10 +13,11 @@ Plots:
 
   Contour Plots:
     Linear:
-      Plot_it: true
-      Gif_it: true
+      Plot_it: false
+      Gif_it: false
     Log:
       Plot_it: true
+      Gif_it: true
 
   Quiver:
     Plot_it: false
