@@ -12,7 +12,7 @@ Toolkit to further analyze 2D and 3D Digital Image Correlation results. The curr
 - [ ] Streamline plots of the first or second principal strain fields
 - [ ] Allow the user to be able to change the name of the spatial variables (`x` instead of `X` in the case of VIC2D since there is no `X (mm)` by default)
 - [ ] Increase the quality (dpi) of the plots, or even better turn it into a deck variable
-- [ ] Add a scale (mm/px) to the `Report.csv`
+- [x] Add a scale (mm/px) to the `Report.csv`
 - [ ] Add a scale bar to all the plots
 - [ ] Make it possible to create a gif out of any kind of plots, not only heatmaps
 
