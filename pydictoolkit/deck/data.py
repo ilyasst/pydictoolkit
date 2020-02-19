@@ -67,6 +67,10 @@ class Deck():
                             if not "Plot_it" in self.doc["Plots"]["Contour Plots"]["Linear"]:
                                 print ("YamlTagError: Plot_it within Plots-Contour Plots-Linear tag is a mandatory tag")
                                 sys.exit(1)
+                            if not "Gif_it" in self.doc["Plots"]["Contour Plots"]["Linear"]:
+                                print("YamlTagWarning: Plot_it within Plots-Contour Plots-Linear tag is a mandatory tag")
+                                print("The default value `Gif_it = False` was chosen.")
+                                self.doc["Plots"]["Contour Plots"]["Linear"]["Gif_it"] = False 
 
                         if not "Log" in self.doc["Plots"]["Contour Plots"]:
                             print ("YamlTagError: Log within Plots-Contour Plots tag is a mandatory tag")

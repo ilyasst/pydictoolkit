@@ -5,24 +5,25 @@ Plots:
   Target Plot: e1
 
   Heatmaps:
-    Plot_it: true
+    Plot_it: false
     Region:
       i: 200
       j: 200
-    Gif_it: true
+    Gif_it: false
 
   Contour Plots:
     Linear:
       Plot_it: true
+      Gif_it: true
     Log:
       Plot_it: true
 
   Quiver:
-    Plot_it: true
+    Plot_it: false
 
   Streamplots:
-    Plot_it: true
+    Plot_it: false
 
   Incremental Contour:
-    Plot_it: true
+    Plot_it: false
     Target Plot: e1_delta

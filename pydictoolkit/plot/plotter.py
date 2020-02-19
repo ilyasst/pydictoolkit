@@ -23,11 +23,14 @@ class Plotter():
         plot_quiver = deck.doc["Plots"]["Quiver"]["Plot_it"] 
         plot_streamplots = deck.doc["Plots"]["Streamplots"]["Plot_it"] 
         gif_heatmaps = deck.doc["Plots"]["Heatmaps"]["Gif_it"] 
+        gif_contourlin = deck.doc["Plots"]["Contour Plots"]["Linear"]["Gif_it"] 
        
         for self.index, dic_image in enumerate(dic_data.dataframe):
             index = self.index
             if plot_contour_linear.lower() == "true":
                 self.create_contourplot_linear(dic_data.dic_paths[index], dic_image, deck, data_modes)
+                if gif_contourlin.lower() == "true":
+                    self.create_contourplotlin_gif(dic_data.dataframe, deck, data_modes)
             if plot_contour_log.lower() == "true":
                 self.create_contourplot_log(dic_data.dic_paths[index], dic_image, deck, data_modes)
             if plot_quiver.lower() == "true":
@@ -51,6 +54,7 @@ class Plotter():
             if gif_heatmaps == "true":
                 self.create_heatmaps_gif(data_modes.grouped, deck, data_modes.scale_min, data_modes.scale_max)
 
+
     def filter_NaN_Matrix(self, U, sigVal):  
         #Fonction pour limiter la propagation des NaNs dans le filtre gaussien lissant l'image
         V=U.copy()
@@ -68,7 +72,6 @@ class Plotter():
     def create_contourplot_log(self, file_name, df, deck, data_modes): 
         x = list(sorted(set( df["x"].values )))
         y = list(sorted(set( df["y"].values )))
-        
         
         img_name = file_name[0 : len(file_name) -10] + '.tif'
         img = plt.imread(img_name)
@@ -286,7 +289,6 @@ class Plotter():
     def create_heatmaps_gif(self, dfs, deck, vmin, vmax):
         #set base plotting space 
         fig = plt.figure(figsize=(9,6))
-        fig.title = "how about now"
 
         # create iterator
         data_frames_iterator = iter(dfs)
@@ -311,3 +313,33 @@ class Plotter():
             ax.set_ylim(heatmap_data.shape[0], 0)
 
         animation.FuncAnimation(fig, update_frame, frames=len(dfs)-1, interval=400).save('heatmaps.gif', writer = writer)
+
+
+    def create_contourplotlin_gif(self, dfs, deck, data_modes):
+        #set base plotting space 
+        fig, ax = plt.subplots(dpi=300)
+        x = list(sorted(set( dfs[0]["x"].values )))
+        y = list(sorted(set( dfs[0]["y"].values )))
+
+        # create iterator
+        data_frames_iterator = iter(dfs)
+
+        # set up formatting of the gif later
+        writer='matplotlib.animation.PillowWriter'
+
+        def update_frame_log(i):
+            plt.clf()
+            df = next(data_frames_iterator)
+            
+            df.loc[df["sigma"] == -1, deck.doc["Plots"]['Target Plot'] ] = np.nan
+            e1 = np.array(df[deck.doc["Plots"]['Target Plot']].values)
+            e1 = e1.reshape(len(y), len(x))
+
+            levels = np.sort(np.linspace(data_modes.vmin_0, data_modes.vmax_0,20))
+            cont = plt.pcolormesh(x,y,e1,vmin=data_modes.vmin_0, vmax=data_modes.vmax_0,cmap='plasma')
+            plt.contour(x, y, e1, levels = levels, colors = 'k', linewidths = 0.5) 
+            plt.colorbar(cont)
+
+            return cont
+
+        animation.FuncAnimation(fig, update_frame_log, frames=len(dfs)-1, interval=600).save('contourplotlog.gif', writer = writer)
