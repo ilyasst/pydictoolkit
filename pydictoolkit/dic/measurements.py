@@ -8,6 +8,9 @@ class DIC_measurements:
             temp['filename'] = dfs.dic_paths[index]
             temp['index'] = index
             self.report.append(temp)
+
+        for index, df in enumerate(dfs.dataframe):
+            dfs.dataframe[index] = df.astype('float64')
         
         self.compute_measurements(dfs.dataframe)
         self.write_report(dfs.dataframe, deck)
